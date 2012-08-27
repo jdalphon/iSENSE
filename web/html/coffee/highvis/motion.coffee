@@ -36,6 +36,10 @@ class window.Motion extends BaseVis
         
         dt = new google.visualization.DataTable();
         
+        if ( data.timeFields.length > 0 )
+            if ( data.timeFields[0] != 1)
+                @shuffleFields()
+        
         for field,fieldIndex in data.fields
             switch (Number field.typeID)
                 when data.types.TEXT then dt.addColumn('string', field.fieldName) 
@@ -51,9 +55,9 @@ class window.Motion extends BaseVis
             line
         
         dt.addRow(row) for row in rows
-                   
+           
         chart = new google.visualization.MotionChart(document.getElementById('motion_canvas'));
-        chart.draw(dt, {width: 850, height:490});
+        chart.draw(dt, {width: ($ '#motion_canvas').width(), height: ($ '#motion_canvas').height()});
         super()
 
     #Gets called when the controls are clicked and at start
@@ -68,5 +72,21 @@ class window.Motion extends BaseVis
 
     drawChart: ->
 
+    shuffleFields: ->
+    
+        timeField= data.timeFields[0]
         
+        if (timeField != -1 && timeField != 1 )
+            tempa = data.fields[1]
+            tempb = data.fields[timeField]
+            data.fields[1] = tempb
+            data.fields[timeField] = tempa
+            
+            for dataPoint,dpindex in data.dataPoints
+                tempa = dataPoint[1]
+                tempb = dataPoint[timeField]
+                data.dataPoints[dpindex][1] = tempb
+                data.dataPoints[dpindex][timeField] = tempa
+                    
+                    
 globals.motion = new Motion "motion_canvas"
